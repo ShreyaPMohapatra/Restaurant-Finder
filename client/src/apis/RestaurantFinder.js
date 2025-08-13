@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "/api/v1/restaurants",
+  baseURL: "https://restaurant-finder-0xet.onrender.com/",
 });
