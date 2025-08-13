@@ -15,8 +15,7 @@ const RestaurantList = (props) => {
       } catch (err) {}
     };
     fetchData();
-  }, [setRestaurants]); // This line is changed
-
+  }, [setRestaurants]);
   const handleDelete = async (e, id) => {
     e.stopPropagation();
     try {
