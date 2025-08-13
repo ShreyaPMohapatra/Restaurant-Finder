@@ -19,6 +19,7 @@ const RestaurantList = (props) => {
   const handleDelete = async (e, id) => {
     e.stopPropagation();
     try {
+      // eslint-disable-next-line
       const response = await RestaurantFinder.delete(`/${id}`);
       setRestaurants(
         restaurants.filter((restaurant) => {

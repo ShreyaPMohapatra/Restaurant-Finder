@@ -6,6 +6,7 @@ import RestaurantFinder from "../apis/RestaurantFinder";
 const UpdateRestaurant = (props) => {
   const { id } = useParams();
   let history = useHistory();
+  // eslint-disable-next-line
   const { setRestaurants } = useContext(RestaurantsContext);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
