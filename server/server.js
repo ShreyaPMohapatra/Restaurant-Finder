@@ -2,10 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
-
 const morgan = require("morgan");
 
 const app = express();
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -134,4 +134,7 @@ app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
   }
 });
 
-module.exports = app;
+// The server now listens on the dynamic port from Render, or 3001 if local
+app.listen(port, () => {
+  console.log(`server is up and listening on port ${port}`);
+});
