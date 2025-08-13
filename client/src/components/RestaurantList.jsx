@@ -16,11 +16,11 @@ const RestaurantList = (props) => {
     };
     fetchData();
   }, [setRestaurants]);
+
   const handleDelete = async (e, id) => {
     e.stopPropagation();
     try {
-      // eslint-disable-next-line
-      const response = await RestaurantFinder.delete(`/${id}`);
+      await RestaurantFinder.delete(`/${id}`);
       setRestaurants(
         restaurants.filter((restaurant) => {
           return restaurant.id !== id;
@@ -46,7 +46,8 @@ const RestaurantList = (props) => {
     }
     return (
       <>
-        <StarRating rating={restaurant.id} />
+        {/* The change is here: Pass the actual average_rating to the StarRating component */}
+        <StarRating rating={restaurant.average_rating} />
         <span className="text-warning ml-1">({restaurant.count})</span>
       </>
     );
@@ -96,31 +97,6 @@ const RestaurantList = (props) => {
                 </tr>
               );
             })}
-          {/* <tr>
-            <td>mcdonalds</td>
-            <td>New YOrk</td>
-            <td>$$</td>
-            <td>Rating</td>
-            <td>
-              <button className="btn btn-warning">Update</button>
-            </td>
-            <td>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>mcdonalds</td>
-            <td>New YOrk</td>
-            <td>$$</td>
-            <td>Rating</td>
-            <td>
-              <button className="btn btn-warning">Update</button>
-            </td>
-            <td>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr> */}
         </tbody>
       </table>
     </div>
