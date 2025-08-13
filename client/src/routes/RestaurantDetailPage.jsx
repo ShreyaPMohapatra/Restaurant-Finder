@@ -16,16 +16,11 @@ const RestaurantDetailPage = () => {
     const fetchData = async () => {
       try {
         const response = await RestaurantFinder.get(`/${id}`);
-        console.log(response);
-
         setSelectedRestaurant(response.data.data);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
-
     fetchData();
-  }, []);
+  }, [id, setSelectedRestaurant]);
   return (
     <div>
       {selectedRestaurant && (

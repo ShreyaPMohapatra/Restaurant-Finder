@@ -10,14 +10,12 @@ const RestaurantList = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await RestaurantFinder.get("/");
-        console.log(response.data.data);
-        setRestaurants(response.data.data.restaurants);
+        const res = await RestaurantFinder.get("/");
+        setRestaurants(res.data.data.restaurants);
       } catch (err) {}
     };
-
     fetchData();
-  }, []);
+  }, [setRestaurants]); // This line is changed
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
