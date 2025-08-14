@@ -3,21 +3,21 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 const morgan = require("morgan");
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
 
 // Get all Restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
   try {
-    //const results = await db.query("select * from restaurants");
     const restaurantRatingsData = await db.query(
       "select * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id;"
     );
-
     res.status(200).json({
       status: "success",
       results: restaurantRatingsData.rows.length,
@@ -30,23 +30,17 @@ app.get("/api/v1/restaurants", async (req, res) => {
   }
 });
 
-//Get a Restaurant
+// Get a Restaurant
 app.get("/api/v1/restaurants/:id", async (req, res) => {
-  console.log(req.params.id);
-
   try {
     const restaurant = await db.query(
       "select * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id where id = $1",
       [req.params.id]
     );
-    // select * from restaurants wehre id = req.params.id
-
     const reviews = await db.query(
       "select * from reviews where restaurant_id = $1",
       [req.params.id]
     );
-    console.log(reviews);
-
     res.status(200).json({
       status: "succes",
       data: {
@@ -60,16 +54,12 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
 });
 
 // Create a Restaurant
-
 app.post("/api/v1/restaurants", async (req, res) => {
-  console.log(req.body);
-
   try {
     const results = await db.query(
       "INSERT INTO restaurants (name, location, price_range) values ($1, $2, $3) returning *",
       [req.body.name, req.body.location, req.body.price_range]
     );
-    console.log(results);
     res.status(201).json({
       status: "succes",
       data: {
@@ -82,14 +72,12 @@ app.post("/api/v1/restaurants", async (req, res) => {
 });
 
 // Update Restaurants
-
 app.put("/api/v1/restaurants/:id", async (req, res) => {
   try {
     const results = await db.query(
       "UPDATE restaurants SET name = $1, location = $2, price_range = $3 where id = $4 returning *",
       [req.body.name, req.body.location, req.body.price_range, req.params.id]
     );
-
     res.status(200).json({
       status: "succes",
       data: {
@@ -99,12 +87,9 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-  console.log(req.params.id);
-  console.log(req.body);
 });
 
 // Delete Restaurant
-
 app.delete("/api/v1/restaurants/:id", async (req, res) => {
   try {
     const results = await db.query("DELETE FROM restaurants where id = $1", [
@@ -122,7 +107,6 @@ app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
       "INSERT INTO reviews (restaurant_id, name, review, rating) values ($1, $2, $3, $4) returning *;",
       [req.params.id, req.body.name, req.body.review, req.body.rating]
     );
-    console.log(newReview);
     res.status(201).json({
       status: "success",
       data: {
@@ -134,7 +118,12 @@ app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
   }
 });
 
-// The server now listens on the dynamic port from Render, or 3001 if local
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 app.listen(port, () => {
   console.log(`server is up and listening on port ${port}`);
 });
