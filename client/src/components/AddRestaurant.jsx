@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-// The correct path is '../apis/RestaurantFinder'
+import React, { useState, useContext } from 'react';
 import RestaurantFinder from '../apis/RestaurantFinder';
+// Correct import path to go up one level and then into the context folder
+import { RestaurantsContext } from '../context/RestaurantsContext'; 
 
 const AddRestaurant = () => {
+  const { addRestaurant } = useContext(RestaurantsContext);
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [priceRange, setPriceRange] = useState('Price Range');
@@ -16,16 +18,11 @@ const AddRestaurant = () => {
         price_range: priceRange,
       });
 
-      console.log(response);
+      addRestaurant(response.data.data.restaurant);
 
       setName('');
       setLocation('');
       setPriceRange('Price Range');
-      
-      // After a successful POST request, you need to trigger a refresh
-      // of the restaurant list to show the newly added restaurant.
-      // This is often done by updating a state variable in a parent component
-      // or using a state management library.
       
     } catch (err) {
       console.error(err);

@@ -1,106 +1,78 @@
-import React, { useEffect, useContext } from "react";
-import RestaurantFinder from "../apis/RestaurantFinder";
-import { RestaurantsContext } from "../context/RestaurantsContext";
-import { useHistory } from "react-router-dom";
-import StarRating from "./StarRating";
+import React, { useState, useContext } from 'react';
+import RestaurantFinder from '../apis/RestaurantFinder';
+// Correct import path: go up one directory, then into 'context' folder
+import { RestaurantsContext } from '../context/RestaurantsContext'; 
 
-const RestaurantList = (props) => {
-  const { restaurants, setRestaurants } = useContext(RestaurantsContext);
-  let history = useHistory();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await RestaurantFinder.get("/restaurants");
-        setRestaurants(res.data.data.restaurants);
-      } catch (err) {}
-    };
-    fetchData();
-  }, [setRestaurants]);
+const AddRestaurant = () => {
+  const { addRestaurant } = useContext(RestaurantsContext);
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [priceRange, setPriceRange] = useState('Price Range');
 
-  const handleDelete = async (e, id) => {
-    e.stopPropagation();
+  const handleAddRestaurant = async (e) => {
+    e.preventDefault();
     try {
-      await RestaurantFinder.delete(`/${id}`);
-      setRestaurants(
-        restaurants.filter((restaurant) => {
-          return restaurant.id !== id;
-        })
-      );
+      const response = await RestaurantFinder.post('/restaurants', {
+        name,
+        location,
+        price_range: priceRange,
+      });
+
+      addRestaurant(response.data.data.restaurant);
+
+      setName('');
+      setLocation('');
+      setPriceRange('Price Range');
+      
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
-  };
-
-  const handleUpdate = (e, id) => {
-    e.stopPropagation();
-    history.push(`/restaurants/${id}/update`);
-  };
-
-  const handleRestaurantSelect = (id) => {
-    history.push(`/restaurants/${id}`);
-  };
-
-  const renderRating = (restaurant) => {
-    if (!restaurant.count) {
-      return <span className="text-warning">0 reviews</span>;
-    }
-    return (
-      <>
-        {/* The change is here: Pass the actual average_rating to the StarRating component */}
-        <StarRating rating={restaurant.average_rating} />
-        <span className="text-warning ml-1">({restaurant.count})</span>
-      </>
-    );
   };
 
   return (
-    <div className="list-group">
-      <table className="table table-hover table-dark">
-        <thead>
-          <tr className="bg-primary">
-            <th scope="col">Restaurant</th>
-            <th scope="col">Location</th>
-            <th scope="col">Price Range</th>
-            <th scope="col">Ratings</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {restaurants &&
-            restaurants.map((restaurant) => {
-              return (
-                <tr
-                  onClick={() => handleRestaurantSelect(restaurant.id)}
-                  key={restaurant.id}
-                >
-                  <td>{restaurant.name}</td>
-                  <td>{restaurant.location}</td>
-                  <td>{"$".repeat(restaurant.price_range)}</td>
-                  <td>{renderRating(restaurant)}</td>
-                  <td>
-                    <button
-                      onClick={(e) => handleUpdate(e, restaurant.id)}
-                      className="btn btn-warning"
-                    >
-                      Update
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      onClick={(e) => handleDelete(e, restaurant.id)}
-                      className="btn btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+    <div className="mb-4">
+      <form onSubmit={handleAddRestaurant} className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-100 rounded-lg shadow-md">
+        <div className="flex-grow">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Restaurant Name"
+          />
+        </div>
+        <div className="flex-grow">
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Location"
+          />
+        </div>
+        <div className="flex-grow-0 w-full sm:w-auto">
+          <select
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option disabled>Price Range</option>
+            <option value="1">$</option>
+            <option value="2">$$</option>
+            <option value="3">$$$</option>
+            <option value="4">$$$$</option>
+            <option value="5">$$$$$</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition-colors"
+        >
+          Add
+        </button>
+      </form>
     </div>
   );
 };
 
-export default RestaurantList;
+export default AddRestaurant;

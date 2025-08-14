@@ -9,7 +9,9 @@ const App = () => {
     <RestaurantsContextProvider>
       <div className="container">
         <Router>
+          {/* Use <Switch> for v5 syntax */}
           <Switch>
+            {/* Use component={...} for v5 syntax */}
             <Route exact path="/" component={Home} />
             <Route
               exact
