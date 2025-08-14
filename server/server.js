@@ -118,6 +118,7 @@ app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
   }
 });
 
+// Add these lines to serve the React frontend
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('*', (req, res) => {
